@@ -36,7 +36,7 @@ export class AuthService {
       password: hashedPassword,
       firstName,
       lastName,
-      role,
+      role: String(role)?.toLowerCase() as User['role'], // Ensure role is stored in lowercase
     });
 
     await this.userRepository.save(user);
