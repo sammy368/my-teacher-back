@@ -1,5 +1,7 @@
 import { Entity, PrimaryGeneratedColumn, Column, CreateDateColumn, UpdateDateColumn } from 'typeorm';
 
+export type UserRole = 'admin' | 'teacher' | 'student';
+
 @Entity('users')
 export class User {
   @PrimaryGeneratedColumn('uuid')
@@ -10,6 +12,13 @@ export class User {
 
   @Column()
   password!: string;
+
+  @Column({
+    type: 'enum',
+    enum: ['admin', 'teacher', 'student'],
+    default: 'student',
+  })
+  role!: UserRole;
 
   @Column({ nullable: true })
   firstName?: string;

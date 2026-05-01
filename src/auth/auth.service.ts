@@ -16,7 +16,7 @@ export class AuthService {
   ) {}
 
   async signup(signupDto: SignupDto) {
-    const { email, password, firstName, lastName } = signupDto;
+    const { email, password, firstName, lastName, role = 'student' } = signupDto;
 
     // Check if user already exists
     const existingUser = await this.userRepository.findOne({
@@ -36,6 +36,7 @@ export class AuthService {
       password: hashedPassword,
       firstName,
       lastName,
+      role,
     });
 
     await this.userRepository.save(user);
@@ -44,6 +45,7 @@ export class AuthService {
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
+      role: user.role,
     });
 
     return {
@@ -54,12 +56,13 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
       },
     };
   }
 
   async signin(signinDto: SigninDto) {
-    const { email, password } = signinDto;
+    const { email, password, role } = signinDto;
 
     // Find user
     const user = await this.userRepository.findOne({
@@ -77,10 +80,16 @@ export class AuthService {
       throw new UnauthorizedException('Invalid credentials');
     }
 
+    // Verify selected role matches stored user role
+    if (String(user.role)?.toLowerCase() !== String(role)?.toLowerCase()) {
+      throw new UnauthorizedException('Selected role does not match this account');
+    }
+
     // Generate JWT token
     const token = this.jwtService.sign({
       sub: user.id,
       email: user.email,
+      role: user.role,
     });
 
     return {
@@ -91,6 +100,7 @@ export class AuthService {
         email: user.email,
         firstName: user.firstName,
         lastName: user.lastName,
+        role: user.role,
       },
     };
   }
