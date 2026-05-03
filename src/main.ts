@@ -4,12 +4,20 @@ import { AppModule } from './app.module';
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
-  // Enable CORS
+  // Enable CORS for browser clients, including Authorization + credentialed requests.
   app.enableCors({
-    origin: true, // Allow all origins in development
-    methods: 'GET,HEAD,PUT,PATCH,POST,DELETE,OPTIONS',
+    origin: process.env.FRONTEND_ORIGIN || true,
+    methods: ['GET', 'HEAD', 'PUT', 'PATCH', 'POST', 'DELETE', 'OPTIONS'],
     credentials: true,
-    allowedHeaders: 'Content-Type, Authorization',
+    allowedHeaders: [
+      'Authorization',
+      'Content-Type',
+      'Accept',
+      'Origin',
+      'X-Requested-With',
+      'user',
+    ],
+    exposedHeaders: ['Authorization'],
   });
 
   await app.listen(process.env.PORT ?? 3000);
