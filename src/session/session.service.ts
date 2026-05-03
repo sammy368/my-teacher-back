@@ -18,7 +18,7 @@ export class SessionService {
     at.addGrant({
       roomJoin: true,
       room: roomName,
-      canPublish: role === 'teacher', // only teacher publishes by default
+      canPublish: true, // only teacher publishes by default
       canSubscribe: true, // everyone subscribes
       canPublishData: true, // for chat / hand-raise signals
     });
